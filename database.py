@@ -14,7 +14,7 @@ def baglanti_al():
             host=DB_HOST,
             database=DB_NAME,
             user=DB_USER,
-            DB_PASS = DB_PASS,
+            passwprd = DB_PASS,
             port=DB_PORT
         )
         return conn
