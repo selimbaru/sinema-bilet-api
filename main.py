@@ -62,7 +62,7 @@ def bilet_sil(kullanici_id:int,bilet_id:int):
     silindi=database.bilet_iptal_et(kullanici_id,bilet_id)
     if silindi:
         return {"durum":"Başarılı",
-                "mesaj":"f{bilet_id} numaralı bilet silindi"
+                "mesaj":f"{bilet_id} numaralı bilet silindi"
                 }
     else:
         return {"durum":"Hata"}
