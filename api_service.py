@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "39d2cc01"
+API_KEY = "..."
 BASE_URL = "http://www.omdbapi.com/"
 
 def film_bilgisi_getir(film_adi):
