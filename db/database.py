@@ -1,11 +1,17 @@
+import os
+from pathlib import Path
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 
-DB_HOST = "localhost"
-DB_NAME = "sinema_db"
-DB_USER = "postgres"
-DB_PASS = "KENDİ ŞİFRENİZİ YAZIN"
-DB_PORT = "5432"
+env_yolu = Path(__file__).resolve().parents[1] / ".env"
+load_dotenv(env_yolu)
+
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
+DB_PORT = os.getenv("DB_PORT")
 
 
 def baglanti_al():
@@ -14,7 +20,7 @@ def baglanti_al():
             host=DB_HOST,
             database=DB_NAME,
             user=DB_USER,
-            passwprd = DB_PASS,
+            password = DB_PASS,
             port=DB_PORT
         )
         return conn
@@ -160,6 +166,20 @@ def bilet_iptal_et(kullanici_id,bilet_id):
     cursor.close()
     conn.close()
     return silindi
+
+def kullanici_giris_yap(email,sifre):
+    conn = baglanti_al()
+    if not conn:
+        return False
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    sorgu = "SELECT id, ad_soyad, email FROM kullanicilar WHERE email = %s AND sifre = %s;"
+    cursor.execute(sorgu,(email,sifre,))
+    kullanici=cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return kullanici
+
+
 
 
 

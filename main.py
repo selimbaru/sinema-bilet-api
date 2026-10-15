@@ -1,6 +1,9 @@
-import api_service
-import database
 from fastapi import FastAPI
+from sinema_projesi.services import ticket_service
+from sinema_projesi.services import movie_service
+from sinema_projesi.services import session_service
+from sinema_projesi.services import user_service
+
 
 app=FastAPI(title="sinema_calısması",)
 
@@ -10,62 +13,51 @@ def ana_sayfa():
 
 @app.get("/filmler/vizyon")
 def vizyondaki_filmleri_getir():
-    filmler=database.vizyondaki_filmleri_getir()
-    return {"filmler": filmler}
-@app.post("/film/ekle")
-def film_ekle(film_adi):
-    film_bilgisi=api_service.film_bilgisi_getir(film_adi)
-    if not film_bilgisi:
-        return {"mesaj":"Böyle bir film bulunamadı"}
-    eklenme=database.film_ekle(film_bilgisi)
+    return movie_service.vizyondaki_filmleri_getir()
 
-    if eklenme:
-        return {"mesaj":"Film başarıyla eklendi","film":film_bilgisi}
-    else:
-        return {"mesaj":"Film kaydedilirken bir hata oluştu"}
+@app.post("/film/ekle")
+def film_ekle(film_adi: str):
+    return movie_service.film_ekle(film_adi)
 
 @app.get("/filmler/{film_id}/seanslar")
-def filmin_seanslarini_getir(film_id:int):
-    seanslar=database.filmin_seanslarini_getir(film_id)
-    return {"seanslar":seanslar}
+def filmin_seanslarini_getir(film_id: int):
+    return session_service.filmin_seanslarini_getir(film_id)
 
 @app.get("/seanslar/{seans_id}/koltuklar")
-def kotukları_getir(seans_id:int):
-    seanslar=database.dolu_koltukları_getir(seans_id)
-    return {"seanslar":seanslar}
+def koltuklari_getir(seans_id: int):
+    return session_service.koltuklari_getir(seans_id)
 
 @app.post("/bilet/al")
-def bilet_al(kullanici_id:int,seans_id:int,koltuk_no:str):
-    basarili=database.bilet_al(kullanici_id,seans_id,koltuk_no)
-    if basarili:
-        return {"durum":"başarılı",
-                "mesaj":"Bilet başarıyla kesildi",
-                "detay":{
-                    "kullanici_id":kullanici_id,
-                    "seans_id":seans_id,
-                    "koltuk_no":koltuk_no
-                }
-                        }
-    else:
-        return {
-            "durum":"Hata",
-            "mesaj":"Bir hata oluştu"
-        }
+def bilet_al(kullanici_id: int, seans_id: int, koltuk_no: str):
+    return ticket_service.bilet_al(kullanici_id, seans_id, koltuk_no)
 
 @app.get("/kullanicilar/{kullanici_id}/biletler")
-def biletleri_gör(kullanici_id:int):
-    biletler=database.kullanici_biletlerini_getir(kullanici_id)
-    return {"biletler":biletler}
+def biletleri_gor(kullanici_id: int):
+    return ticket_service.biletleri_gor(kullanici_id)
+
 
 @app.delete("/kullanicilar/{kullanici_id}/biletler/{bilet_id}")
-def bilet_sil(kullanici_id:int,bilet_id:int):
-    silindi=database.bilet_iptal_et(kullanici_id,bilet_id)
-    if silindi:
-        return {"durum":"Başarılı",
-                "mesaj":f"{bilet_id} numaralı bilet silindi"
-                }
-    else:
-        return {"durum":"Hata"}
+def bilet_sil(kullanici_id: int, bilet_id: int):
+    return ticket_service.bilet_sil(kullanici_id, bilet_id)
+
+@app.post("/giris_yap")
+def giris_yap(email: str, sifre: str):
+    return user_service.giris_yap(email, sifre)
+
+
+@app.post("/seans/ekle")
+def seans_ekle(film_id: int, salon_adi: str, tarih: str, seans_saati: str):
+    return session_service.seans_ekle(
+        film_id, salon_adi, tarih, seans_saati
+    )
+
+
+@app.post("/kayit_ol")
+def kayit_ol(ad_soyad: str, email: str, sifre: str):
+    return user_service.kayit_ol(ad_soyad, email, sifre)
+
+
+
 
 
 

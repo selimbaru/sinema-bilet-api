@@ -1,6 +1,12 @@
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 import requests
 
-API_KEY = "..."
+env_yolu = Path(__file__).resolve().parent / ".env"
+load_dotenv(env_yolu)
+
+API_KEY = os.getenv("OMDB_API_KEY")
 BASE_URL = "http://www.omdbapi.com/"
 
 def film_bilgisi_getir(film_adi):
@@ -22,8 +28,9 @@ def film_bilgisi_getir(film_adi):
                 "Konu":veri.get("Plot"),
             }
         else:
-            return veri.get("Error")
-    return "Bağlantı Hatası"
+            return None
+
+    return None
 
 
 
